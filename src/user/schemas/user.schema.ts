@@ -18,6 +18,7 @@ export const UserSchema: Schema = new Schema({
 
 UserSchema.set('toJSON', {
 	transform: function (doc, ret, options) {
+        ret.id = ret._id;
 		delete ret.__t;
 		delete ret.__v;
 		delete ret._id;
