@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/shared/decorators/current-user';
 import { User } from 'src/user/interfaces/user.interface';
@@ -19,5 +19,12 @@ export class ConversationController {
         @Body() createConversationDto: CreateConversationDto
     ) {
         return this._conversationService.create(user, createConversationDto.otherUserId)
+    }
+
+    @Get('/')
+    async findConversations(
+        @CurrentUser() user: User,
+    ) {
+        return this._conversationService.find(user)
     }
 }

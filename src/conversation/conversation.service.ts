@@ -33,4 +33,11 @@ export class ConversationService {
         }
         return await this._conversationModel.create({ participants: [{ user: currentUser.id }, { user: otherUserId }] })
     }
+
+
+    async find(
+        currentUser: User
+    ): Promise<Conversation[]> {
+        return await this._conversationModel.find({ participants: { $elemMatch: { user: currentUser.id } } });
+    }
 }
