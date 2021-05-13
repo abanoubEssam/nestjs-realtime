@@ -28,14 +28,19 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/platform-socket.io": "^7.6.15",
+    "@nestjs/swagger": "^4.8.0",
     "@nestjs/websockets": "^7.6.15",
+    "@types/bcryptjs": "^2.4.2",
+    "bcryptjs": "^2.4.3",
+    "class-validator": "^0.13.1",
     "mongoose": "^5.12.8",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.6"
+    "rxjs": "^6.6.6",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
