@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 import { ConversationModule } from './conversation/conversation.module';
+import { SocketGateway } from './socket.gateway';
 
 @Module({
   imports: [MongooseModule.forRootAsync({
@@ -20,6 +21,8 @@ import { ConversationModule } from './conversation/conversation.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    }],
+    },
+    SocketGateway
+  ],
 })
 export class AppModule { }
