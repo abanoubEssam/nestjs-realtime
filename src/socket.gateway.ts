@@ -1,35 +1,67 @@
-import { Logger } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway()
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  OnGatewayInit,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  WsResponse,
+} from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
+import { Socket, Server, } from 'socket.io';
+
+
+@WebSocketGateway({ namespace: '/' })
 export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-  //  to send public message
-  @WebSocketServer() wss: Server;
+  @WebSocketServer() server: Server;
+  private logger: Logger = new Logger('AppGateway');
+  private activeSockets = []
+  private users = new Map()
 
-  private logger: Logger = new Logger('SocketGateway');
-  afterInit(server: Server) {
-    this.logger.log('initialized');
-    // throw new Error('Method not implemented.');
-  }
-  handleConnection(client: Socket, ...args: any[]) {
-    // this.logger.log('TCL: SocketGateway -> handleConnection -> args', ...args);
-    this.logger.log(`client ${client.id} connected`);
-    // throw new Error("Method not implemented.");
-  }
-  handleDisconnect(client: Socket) {
-    this.logger.log(`client ${client.id} disconnected`);
-    // throw new Error("Method not implemented.");
-  }
+
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, text: string): WsResponse<string> {
-    // client.emit('msgToClient', text);
-
-    // start send public messages
-    //  this.wss.emit('msgToClient', text);
-    // end send public messages
-
-    return { event: 'msgToClient', data: text };
+  handleMessage(socket: Socket, payload: string): WsResponse<string> {
+    // this.server.emit('msgToClient', payload);
+    return { event: "msgToClient", data: payload }
   }
+
+
+  @SubscribeMessage('CURRENT_USER')
+  handleAnotherMessage(socket: Socket, payload: string): WsResponse<string> {
+    console.log("🚀 ~ file: socket.gateway.ts ~ line 33 ~ SocketGateway ~ handleAnotherMessage ~ payload", payload)
+    // this.server.emit('msgToClient', payload);
+    return { event: "CURRENT_USER", data: payload }
+  }
+
+  afterInit(server: Server) {
+    this.logger.log('WebSocket Init....');
+  }
+
+  handleDisconnect(socket: Socket) {
+    this.logger.log(`Client disconnected: ${socket.id}`);
+  }
+
+  handleConnection(socket: Socket, ...args: any[]) {
+
+    console.log("ME NOW: ", socket.id)
+
+
+
+    socket.on('chat-message', (payload: { from: string, name: string, message: string }) => {
+      console.log("message -> payload", payload)
+      const otherUser = this.users.get(payload.name)
+      if (otherUser) {
+        otherUser.emit('chat-message', payload);
+      } else {
+        socket.emit('user-status',"User offline")
+      }
+    });
+
+
+
+  }
+
+
 }

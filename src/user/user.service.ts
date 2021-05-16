@@ -6,14 +6,23 @@ import { User } from './interfaces/user.interface';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(USER_MODEL_NAME) private userModel: Model<User>) {}
+    constructor(@InjectModel(USER_MODEL_NAME) private userModel: Model<User>) { }
 
-    async createUser(body):Promise<User>{
+    async createUser(body): Promise<User> {
         return await this.userModel.create(body)
     }
 
 
-    async findOne(query: any):Promise<User>{
+    async findOne(query: any): Promise<User> {
         return await this.userModel.findOne(query)
+    }
+
+    async findAllUsers(
+        currentUser?: User
+    ): Promise<User[]> {
+        if (currentUser && currentUser.id) {
+            return await this.userModel.find({ _id: { $ne: currentUser.id } })
+        }
+        return await this.userModel.find({})
     }
 }
